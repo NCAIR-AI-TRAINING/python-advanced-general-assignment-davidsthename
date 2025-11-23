@@ -28,7 +28,7 @@ def get_last_visitor():
             return None
         last = lines[-1].strip().split(" | ")
         name = last[0]
-        timestamp = datetime.fromisoformat(last[1])
+        timestamp = datetime.strptime(last[1], "%Y-%m-%d %H:%M:%S")
     return (name, timestamp)
 
 
