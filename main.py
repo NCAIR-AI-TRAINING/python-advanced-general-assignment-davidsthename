@@ -28,7 +28,10 @@ def get_last_visitor():
             return None
         last = lines[-1].strip().split(" | ")
         name = last[0]
-        timestamp = datetime.strptime(last[1], "%Y-%m-%d %H:%M:%S")
+        try:
+            timestamp = datetime.fromisoformat(last[1])
+        except ValueError:
+            timestamp = None
     return (name, timestamp)
 
 
@@ -40,12 +43,14 @@ def add_visitor(visitor_name):
     last = get_last_visitor()
     if last and last[0].lower() == visitor_name.lower():
         raise DuplicateVisitorError("Can't sign in twice in a row!")
+
     if last:
         last_time = last[1]
         if datetime.now() - last_time < timedelta(minutes=5):
             raise EarlyEntryError("WAIT 5 MINUTES BEFORE SIGNING IN AGAIN!")
+
+    timestamp = datetime.now().replace(microsecond=0).isoformat()
     with open(FILENAME, "a", encoding="utf-8") as f:
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         f.write(f"{visitor_name} | {timestamp}\n")
 
 
