@@ -23,16 +23,21 @@ def get_last_visitor():
     ensure_file()
 
     with open(FILENAME, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-
+        lines = [line.strip() for line in f if line.strip()]
         if not lines:
             return None
-        last = lines[-1].strip().split(" - ", 1)
-        timestamp_str = last[0]
-        name = last[1]
-        timestamp = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
+        last_line = lines[-1]
+
+        if " - " not in last_line:
+            return None
+
+        timestamp_str, name = last_line.split(" - ", 1)
+        try:
+            timestamp = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            return None
+
     return (name, timestamp)
-    # pass
 
 
 def add_visitor(visitor_name):
