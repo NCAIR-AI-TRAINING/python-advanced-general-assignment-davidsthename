@@ -35,10 +35,22 @@ def get_last_visitor():
 
 
 def add_visitor(visitor_name):
+    # last = get_last_visitor()
+    # if last and last[0].lower() == visitor_name.lower():
+    #     raise DuplicateVisitorError("Can't sign in twice in a row!")
+    # # pass
     last = get_last_visitor()
     if last and last[0].lower() == visitor_name.lower():
-        raise DuplicateVisitorError("Can't sign in twice in a row!")
-    # pass
+        raise DuplicateVisitorError("Consecutive visitor detected!")
+    if last:
+        last_time = last[1]
+        now = datetime.now()
+        passed_seconds = (now - last_time).total_seconds()
+        if passed_seconds < 300:
+            raise EarlyEntryError(
+                "Please wait at least 5 minutes before signing in again.")
+    with open(FILENAME, "a", encoding="utf-8") as f:
+        f.write(f"{visitor_name} | {datetime.now().isoformat()}\n")
 
 
 def main():
