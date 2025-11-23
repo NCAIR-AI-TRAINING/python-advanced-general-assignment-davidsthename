@@ -54,7 +54,7 @@ def add_visitor(visitor_name):
             raise EarlyEntryError("WAIT 5 MINUTES BEFORE SIGNING IN AGAIN!")
     with open(FILENAME, "a", encoding="utf-8") as f:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        f.write(f"{timestamp} | {visitor_name}\n")
+        f.write(f"{visitor_name} | {timestamp}\n")
 
 
 def main():
