@@ -15,7 +15,7 @@ FILENAME = "visitors.txt"
 
 def ensure_file():
     if not os.path.exists(FILENAME):
-        with open(FILENAME, "W", encoding="utf-8") as f:
+        with open(FILENAME, "w", encoding="utf-8") as f:
             pass
 
 
@@ -27,7 +27,7 @@ def get_last_visitor():
 
         if not lines:
             return None
-        last = lines[-1].split(", ")
+        last = lines[-1].strip().split(" | ")
         name = last[0]
         timestamp = datetime.fromisoformat(last[1])
     return (name, timestamp)
