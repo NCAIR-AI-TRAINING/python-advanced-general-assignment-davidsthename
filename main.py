@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 
 
@@ -23,22 +23,30 @@ def get_last_visitor():
     ensure_file()
 
     with open(FILENAME, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-
+        lines = [line.strip() for line in f if line.strip()]
         if not lines:
             return None
         last = lines[-1].strip().split(" | ")
         name = last[0]
         timestamp = datetime.fromisoformat(last[1])
     return (name, timestamp)
-    # pass
 
 
 def add_visitor(visitor_name):
+    # last = get_last_visitor()
+    # if last and last[0].lower() == visitor_name.lower():
+    #     raise DuplicateVisitorError("Can't sign in twice in a row!")
+    # # pass
     last = get_last_visitor()
     if last and last[0].lower() == visitor_name.lower():
         raise DuplicateVisitorError("Can't sign in twice in a row!")
-    # pass
+    if last:
+        last_time = last[1]
+        if datetime.now() - last_time < timedelta(minutes=5):
+            raise EarlyEntryError("WAIT 5 MINUTES BEFORE SIGNING IN AGAIN!")
+    with open(FILENAME, "a", encoding="utf-8") as f:
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        f.write(f"{visitor_name} | {timestamp}\n")
 
 
 def main():
