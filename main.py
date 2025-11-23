@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 
 
@@ -28,10 +28,10 @@ def get_last_visitor():
             return None
         last_line = lines[-1]
 
-        if " - " not in last_line:
+        if " | " not in last_line:
             return None
 
-        timestamp_str, name = last_line.split(" - ", 1)
+        timestamp_str, name = last_line.split(" | ", 1)
         try:
             timestamp = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
         except ValueError:
@@ -47,17 +47,14 @@ def add_visitor(visitor_name):
     # # pass
     last = get_last_visitor()
     if last and last[0].lower() == visitor_name.lower():
-        raise DuplicateVisitorError("Consecutive visitor detected!")
+        raise DuplicateVisitorError("Can't sign in twice in a row!")
     if last:
         last_time = last[1]
-        now = datetime.now()
-        passed_seconds = (now - last_time).total_seconds()
-        if passed_seconds < 300:
-            raise EarlyEntryError(
-                "Please wait at least 5 minutes before signing in again.")
+        if datetime.now() - last_time < timedelta(minutes=5):
+            raise EarlyEntryError("WAIT 5 MINUTES BEFORE SIGNING IN AGAIN!")
     with open(FILENAME, "a", encoding="utf-8") as f:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        f.write(f"{timestamp} - {visitor_name}\n")
+        f.write(f"{timestamp} | {visitor_name}\n")
 
 
 def main():
