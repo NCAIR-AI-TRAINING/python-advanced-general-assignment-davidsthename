@@ -15,7 +15,7 @@ FILENAME = "visitors.txt"
 
 def ensure_file():
     if not os.path.exists(FILENAME):
-        with open(FILENAME, "W", encoding="utf-8") as f:
+        with open(FILENAME, "w", encoding="utf-8") as f:
             pass
 
 
@@ -27,9 +27,10 @@ def get_last_visitor():
 
         if not lines:
             return None
-        last = lines[-1].split(", ")
-        name = last[0]
-        timestamp = datetime.fromisoformat(last[1])
+        last = lines[-1].strip().split(" - ", 1)
+        timestamp_str = last[0]
+        name = last[1]
+        timestamp = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
     return (name, timestamp)
     # pass
 
@@ -50,7 +51,8 @@ def add_visitor(visitor_name):
             raise EarlyEntryError(
                 "Please wait at least 5 minutes before signing in again.")
     with open(FILENAME, "a", encoding="utf-8") as f:
-        f.write(f"{visitor_name} | {datetime.now().isoformat()}\n")
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        f.write(f"{timestamp} - {visitor_name}\n")
 
 
 def main():
