@@ -26,17 +26,9 @@ def get_last_visitor():
         lines = [line.strip() for line in f if line.strip()]
         if not lines:
             return None
-        last_line = lines[-1]
-
-        if " | " not in last_line:
-            return None
-
-        timestamp_str, name = last_line.split(" | ", 1)
-        try:
-            timestamp = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
-        except ValueError:
-            return None
-
+        last = lines[-1].strip().split(" | ")
+        name = last[0]
+        timestamp = datetime.fromisoformat(last[1])
     return (name, timestamp)
 
 
